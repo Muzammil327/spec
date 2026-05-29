@@ -157,7 +157,7 @@ A Context Passport is a JSON object with the following structure. Fields marked 
 | `parent_id` | string \| null | No | The `id` of the previous context in the chain. MUST be null for root commits. When present, establishes a directed acyclic graph of contexts forming the execution lineage. |
 | `trace_id` | string \| null | No | Groups multiple commits into a single pipeline run. Recommended format: `trc_{hex}`. |
 | `branch_key` | string | **Yes** | Branch name for this context. MUST default to `"main"` when not specified. Used to distinguish fork branches from the main chain. |
-| `schema_version` | string | **Yes** | Version of the Context Passport specification. Current value: `"1.0"`. |
+| `schema_version` | string | **Yes** | Version of the Context Passport specification. Current value: `"2.0"`. |
 
 #### 3.2.2 Agent attribution
 
