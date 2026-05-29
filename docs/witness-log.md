@@ -347,7 +347,7 @@ That's the entire architecture. Total code: a few hundred lines per component. T
 
 - **The specific schema for the checkpoint envelope.** This is operator-defined. Different operators MAY use different schemas as long as they document them publicly so verifiers can interpret each operator's Witness Log.
 - **Cross-operator interoperability.** Two operators with different checkpoint schemas cannot directly cross-verify each other's logs. Standardization here is a future spec work item.
-- **Privacy-preserving Witness Logs.** Some operators may need to publish anchors without exposing which commits are in them (e.g., for confidential workflows). This requires a different cryptographic construction (e.g., a polynomial commitment or KZG-based proof) and is out of scope for v1.0.
+- **Privacy-preserving Witness Logs.** Some operators may need to publish anchors without exposing which commits are in them (e.g., for confidential workflows). This requires a different cryptographic construction (e.g., a polynomial commitment or KZG-based proof) and is out of scope for this version of the spec.
 
 ---
 
