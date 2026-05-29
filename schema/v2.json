@@ -73,7 +73,7 @@
         "payload_hash": {
           "type": "string",
           "pattern": "^sha256:[a-f0-9]{64}$",
-          "description": "sha256(JSON.stringify(payload, sorted_keys))"
+          "description": "sha256 of the RFC 8785 (JCS) canonicalized payload. See SPEC.md section 3.4."
         },
         "parent_hash": {
           "type": ["string", "null"],
