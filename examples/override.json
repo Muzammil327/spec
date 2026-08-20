@@ -1,0 +1,80 @@
+[
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774358460000_d0c1de01a1b2",
+    "parent_id": null,
+    "trace_id": "trace_app_4471",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "agent-underwriter-01",
+      "agent_name": "Underwriting Agent",
+      "role": "executor",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "commit",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T10:01:00Z"
+    },
+    "payload": {
+      "input": "Assess application APP-4471 against the lending policy.",
+      "output": {
+        "decision": "decline",
+        "confidence": 0.88,
+        "policy_version": "lending-policy-2026-02",
+        "reasons": [
+          "debt_to_income_above_threshold",
+          "thin_credit_file"
+        ]
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:43e955f6b5f542a18de59064a5a90e28496cdfd7f4f3e534344f0a72e22536ac",
+      "parent_hash": null,
+      "integrity_hash": "sha256:f732a2d8020bb8649b0fb0764ec7ab1f9af40279562414ff77cb96e83629717e",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T10:01:00Z"
+  },
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774358520000_0edd0e02c3d4",
+    "parent_id": "ctx_1774358460000_d0c1de01a1b2",
+    "trace_id": "trace_app_4471",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "human:reviewer_2c9d",
+      "agent_name": "Senior Credit Officer",
+      "role": "compliance",
+      "provider": null,
+      "model": null
+    },
+    "event": {
+      "type": "override",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T10:02:00Z"
+    },
+    "payload": {
+      "input": "Review declined application APP-4471.",
+      "output": {
+        "original_decision": "decline",
+        "new_decision": "approve",
+        "overridden_by_role": "senior_credit_officer",
+        "reviewer_ref": "reviewer_2c9d",
+        "reason": "Applicant supplied twelve months of verified rental payments, which the model does not ingest. Debt to income recomputed at 0.31.",
+        "authority": "Credit Committee delegation CC-2026-07",
+        "model_left_unchanged": true
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:f12f6d7c3634860aabfec98a63bd567792baa6c54d1f17396fbe9b218089a7f2",
+      "parent_hash": "sha256:f732a2d8020bb8649b0fb0764ec7ab1f9af40279562414ff77cb96e83629717e",
+      "integrity_hash": "sha256:e8933c7737e077e9539682e0e8829600425d94ff4ca4e47af5fe461738ecac41",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T10:02:00Z"
+  }
+]

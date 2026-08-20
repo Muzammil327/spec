@@ -1,0 +1,77 @@
+[
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774362000000_5c0e0e03e5f6",
+    "parent_id": null,
+    "trace_id": "trace_txn_99183",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "agent-screening-01",
+      "agent_name": "Sanctions Screening Agent",
+      "role": "validator",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "commit",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T11:00:00Z"
+    },
+    "payload": {
+      "input": "Classify transaction TXN-99183 for sanctions risk.",
+      "output": {
+        "classification": "possible_match",
+        "confidence": 0.42,
+        "below_auto_decision_threshold": true,
+        "threshold": 0.9,
+        "matched_list": "consolidated_sanctions_2026-03"
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:c921d9285c70b5c47db8e6f28e88b5270d2cc9f71a09c47bd2f6f83bdc432a52",
+      "parent_hash": null,
+      "integrity_hash": "sha256:7a180dd4111748da065ad771625af21732064deeadb293b2e922ad19244c4b33",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T11:00:00Z"
+  },
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774362060000_e5ca0a04a1b2",
+    "parent_id": "ctx_1774362000000_5c0e0e03e5f6",
+    "trace_id": "trace_txn_99183",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "agent-screening-01",
+      "agent_name": "Sanctions Screening Agent",
+      "role": "validator",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "escalate",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T11:01:00Z"
+    },
+    "payload": {
+      "input": "Confidence 0.42 is below the 0.90 auto-decision threshold.",
+      "output": {
+        "escalated_to": "financial_crime_team",
+        "queue": "sanctions_manual_review",
+        "reason": "below_auto_decision_threshold",
+        "agent_action_taken": "none, transaction held pending human decision",
+        "sla_hours": 4,
+        "case_ref": "case_5b71e0"
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:bb5b03b8aac0f5d45f7585005e05b8ff93f11de5aed52fb4fc5d434f3a348079",
+      "parent_hash": "sha256:7a180dd4111748da065ad771625af21732064deeadb293b2e922ad19244c4b33",
+      "integrity_hash": "sha256:2e362f8513193b558672604d639732d0e6e201f58e1a607ebcbe11c89ec04755",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T11:01:00Z"
+  }
+]
