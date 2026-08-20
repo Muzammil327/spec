@@ -153,5 +153,8 @@ if (risen.length) {
   console.error('\nRisen since last check:');
   for (const [k, v] of risen) console.error(`  ${k}: ${before[k]} -> ${v}`);
 }
+console.error('\n' + 'To acknowledge this and stop the weekly alert,');
+console.error('commit the new numbers into .github/adoption.json:');
+console.error('  ' + JSON.stringify(merged));
 console.error('\n' + '='.repeat(60) + '\n');
 process.exit(1);
