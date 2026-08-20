@@ -1,33 +1,38 @@
 name: Steward
 
-# Low-touch upkeep for a specification that is deliberately not under active
-# development. It does two jobs.
+# Low-touch upkeep for a specification that does not need daily attention.
+# Three jobs, in order of how much the news matters.
 #
-# 1. Nobody is left waiting. The contributors are the only part of this
-#    project that appreciates while it is ignored, and the way to lose them
-#    is to let a pull request sit unanswered for a month. This looks for open
-#    issues and PRs opened by someone other than the maintainer that have had
-#    no maintainer reply, and FAILS the run if any are older than the grace
-#    period. GitHub emails the repository owner when a scheduled workflow
-#    fails, so the alert is private and needs no secrets, no third-party
-#    service and no account. Nothing is posted publicly: a bot announcing
-#    "3 contributions awaiting reply" on an open standard is worse than
-#    silence.
+# 1. Somebody starts using this and nobody notices. Adoption of a CC0 standard
+#    is invisible by design: nobody signs up, nobody logs in, and there is no
+#    server to count. So .github/adoption-check.mjs looks for evidence that a
+#    human did something, chiefly a Context Passport record or a reference SDK
+#    import committed to a public repository, and fails the run when a signal
+#    rises. GitHub emails the repository owner when a scheduled workflow fails,
+#    so the alert costs nothing and needs no secrets or third-party service.
 #
-# 2. Somebody starts using this and nobody notices. Adoption of a CC0 standard
-#    is invisible by design: nobody signs up and there is no server to count.
-#    So .github/adoption-check.mjs looks for evidence that a human did
-#    something, chiefly a Context Passport record or an SDK import committed to
-#    a public repository, and fails the run when a signal rises. The first real
-#    user is the most important event in this project's life and should not
-#    arrive as a line in a log nobody reads.
+#    The baseline in .github/adoption.json is updated by a human, not by this
+#    workflow. That means a rise keeps alarming every week until someone
+#    acknowledges it by committing the new numbers. For an event this rare and
+#    this important, being nagged until you look is the correct behaviour.
+#
+# 2. Nobody is left waiting. The contributors are the only part of this project
+#    that appreciates while it is ignored, and the way to lose them is to let a
+#    pull request sit unanswered for a month. Nothing is posted publicly: a bot
+#    announcing "3 contributions awaiting reply" on an open standard is worse
+#    than silence.
 #
 # 3. The automation does not switch itself off. GitHub disables scheduled
-#    workflows after 60 days without repository activity, and a repository
-#    with no active development is exactly the case that triggers it. Once a
-#    month this commits a heartbeat file, which counts as activity and keeps
-#    both this workflow and Spec CI alive. Monthly rather than weekly keeps
-#    the commit log readable while leaving roughly 2x margin on the 60 days.
+#    workflows after 60 days without repository activity, and any quiet stretch
+#    can reach that. A monthly empty commit on a side branch counts as activity
+#    and keeps this workflow alive.
+#
+#    It goes to a side branch rather than main for a concrete reason: main is
+#    covered by a ruleset requiring pull requests, so the Actions token cannot
+#    push there, and the first version of this workflow failed exactly that way.
+#    Pushing elsewhere is also simply better here. A specification's main branch
+#    should read as a record of decisions about the format, not as a monthly
+#    stream of bot commits.
 
 on:
   schedule:
@@ -40,64 +45,25 @@ permissions:
   pull-requests: read
 
 env:
-  # Maintainers are resolved from the repository's collaborator list at run
-  # time rather than hardcoded, so this file carries no personal handle and
-  # stays correct if the maintainer set changes.
   GRACE_DAYS: '7'
+  HEARTBEAT_BRANCH: steward-heartbeat
 
 jobs:
   steward:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # 2. Heartbeat, once per calendar month ----------------------------
-      - name: Monthly heartbeat commit
-        run: |
-          set -euo pipefail
-          month=$(date -u +%Y-%m)
-          file=.github/heartbeat.txt
-          if [ -f "$file" ] && grep -q "^$month\$" "$file"; then
-            echo "Heartbeat for $month already recorded; no commit needed."
-            exit 0
-          fi
-          printf '%s\n' "$month" > "$file"
-          git config user.name  'context-passport-steward'
-          git config user.email 'actions@github.com'
-          git add "$file"
-          git commit -m "chore: steward heartbeat $month
-
-          Keeps scheduled workflows from being auto-disabled after 60 days
-          of repository inactivity. See .github/workflows/steward.yml."
-          git push
-          echo "Heartbeat committed for $month."
-
-      # 1. Unanswered external contributions -----------------------------
-      # 3. Adoption. Runs before the contributor check so that a backlog of
-      #    unanswered issues cannot mask the more important news.
+      # 1. Adoption, first because it is the news that matters most.
       - name: Watch for external adoption
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: node .github/adoption-check.mjs
 
-      - name: Record any change in adoption
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          if git diff --quiet -- .github/adoption.json; then
-            echo "No change in adoption signals."
-            exit 0
-          fi
-          git config user.name  'context-passport-steward'
-          git config user.email 'actions@github.com'
-          git add .github/adoption.json
-          git commit -m "chore: adoption signals changed"
-          git push
-          echo "Recorded new adoption signals."
-
+      # 2. Contributions left without a reply.
       - name: Check for contributions awaiting a reply
         if: always()
         env:
@@ -110,3 +76,25 @@ jobs:
           gh pr list     --repo "$REPO" --state open --limit 100 \
             --json number,title,author,createdAt,url > prs.json
           node .github/steward-check.mjs
+
+      # 3. Keep the schedule from being auto-disabled. Runs last and always,
+      #    so a genuine alert above cannot stop the automation staying alive.
+      - name: Monthly heartbeat
+        if: always()
+        run: |
+          set -euo pipefail
+          month=$(date -u +%Y-%m)
+          message="chore: steward heartbeat $month"
+
+          git fetch origin "$HEARTBEAT_BRANCH" --quiet 2>/dev/null || true
+          last=$(git log -1 --format=%s "origin/$HEARTBEAT_BRANCH" 2>/dev/null || echo '')
+          if [ "$last" = "$message" ]; then
+            echo "Heartbeat for $month already recorded."
+            exit 0
+          fi
+
+          git config user.name  'context-passport-steward'
+          git config user.email 'actions@github.com'
+          git commit --allow-empty -m "$message"
+          git push --force origin "HEAD:refs/heads/$HEARTBEAT_BRANCH"
+          echo "Heartbeat recorded for $month on $HEARTBEAT_BRANCH."
