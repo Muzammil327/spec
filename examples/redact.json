@@ -1,0 +1,41 @@
+{
+  "$schema": "https://contextpassport.com/schema/v2.json",
+  "schema_version": "2.0",
+  "id": "ctx_1776950400000_dead0b05c3da",
+  "parent_id": null,
+  "trace_id": "trace_app_4471",
+  "branch_key": "main",
+  "created_by": {
+    "agent_id": "privacy-service-01",
+    "agent_name": "Privacy Service",
+    "role": "compliance",
+    "provider": "internal",
+    "model": null
+  },
+  "event": {
+    "type": "redact",
+    "to_agent_id": null,
+    "timestamp": "2026-04-28T14:30:00Z"
+  },
+  "payload": {
+    "input": "Erasure request under GDPR Art. 17 from subject_8f2a41.",
+    "output": {
+      "target_record": "ctx_1774358460000_d0c1de01a1b2",
+      "fields_removed": [
+        "payload.output.reasons"
+      ],
+      "storage_action": "field values deleted from the record store",
+      "chain_action": "none, no prior record was rewritten",
+      "note": "Rewriting the target payload would change its payload_hash and break verification for every record chained after it. The erasure is therefore recorded as a new event, and verifiers reading the target record will find the payload absent while the chain still verifies.",
+      "approved_by_role": "data_protection_officer",
+      "request_ref": "dsr_41c8"
+    }
+  },
+  "integrity": {
+    "payload_hash": "sha256:cd8de10b0635d04a1a00aec06b314b3785841db2c4afbf8143c8fa350b893a31",
+    "parent_hash": null,
+    "integrity_hash": "sha256:c081787709c24f5dea4cd8f9793d0f30a7f45382a6b6bac5017bbb0e4990e819",
+    "verification_status": "valid"
+  },
+  "created_at": "2026-04-28T14:30:00Z"
+}

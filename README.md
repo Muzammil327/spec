@@ -42,6 +42,7 @@ The goal: become the standard envelope format for AI agent events — a record a
 
 ## Contents
 
+- [`docs/quickstart.md`](docs/quickstart.md) — five minutes from install to a verified chain
 - [`SPEC.md`](SPEC.md) — full specification (v2.0)
 - [`schema/v2.json`](schema/v2.json) — machine-readable JSON Schema (v2.0)
 - [`schema/v1.json`](schema/v1.json) — machine-readable JSON Schema (v1.x, retained for compatibility)
@@ -59,8 +60,11 @@ The goal: become the standard envelope format for AI agent events — a record a
   - [`canonical-json-jcs.md`](proposals/canonical-json-jcs.md) — adopt RFC 8785 in v2.0 to close v1.x portability gaps
 - [`EXTENSIONS.md`](EXTENSIONS.md) — vendor-namespaced extension registry
 - [`IMPLEMENTATIONS.md`](IMPLEMENTATIONS.md) — known implementations
+- [`CHANGELOG.md`](CHANGELOG.md) — what changed between specification versions
 - [`GOVERNANCE.md`](GOVERNANCE.md) — how this specification evolves
-- [`examples/`](examples/) — example passports and chains
+- [`examples/`](examples/) — example passports and chains, including a worked
+  record for every compliance event type (`consent`, `override`, `escalate`,
+  `redact`, `audit`)
 
 ## Implementations
 

@@ -28,8 +28,8 @@ jobs:
       - run: npm install --no-save ajv ajv-formats canonicalize
       - run: node tools/validate-examples.mjs
 
-  anthropic-example:
-    name: Anthropic SDK example still runs
+  docs-and-examples:
+    name: Documented code still runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,3 +41,7 @@ jobs:
       # that nobody runs is an example that quietly stops working.
       - run: pip install context-passport
       - run: python examples/integrations/anthropic_sdk.py --offline
+      # The quickstart makes specific claims (the chain verifies, editing a
+      # record breaks it). Assert those rather than trusting prose nobody has
+      # run since it was written.
+      - run: python tools/check-quickstart.py

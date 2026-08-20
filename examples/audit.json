@@ -1,0 +1,58 @@
+{
+  "$schema": "https://contextpassport.com/schema/v2.json",
+  "schema_version": "2.0",
+  "id": "ctx_1777593600000_a0d10c06e5f7",
+  "parent_id": null,
+  "trace_id": "trace_audit_2026_q1",
+  "branch_key": "main",
+  "created_by": {
+    "agent_id": "audit-service-01",
+    "agent_name": "Audit Service",
+    "role": "validator",
+    "provider": "internal",
+    "model": null
+  },
+  "event": {
+    "type": "audit",
+    "to_agent_id": null,
+    "timestamp": "2026-04-30T23:59:00Z"
+  },
+  "payload": {
+    "input": "Quarterly review of automated lending decisions, Q1 2026.",
+    "output": {
+      "period": {
+        "from": "2026-01-01",
+        "to": "2026-03-31"
+      },
+      "records_reviewed": 1284,
+      "chain_verified": true,
+      "verification_method": "recomputed payload_hash and integrity_hash for every record",
+      "overrides_recorded": 37,
+      "escalations_recorded": 112,
+      "exceptions": 2,
+      "exception_detail": [
+        {
+          "record": "ctx_1770000000000_e0a1b2c3d4e5",
+          "finding": "override recorded without a stated authority reference",
+          "severity": "low",
+          "remediation": "authority field made mandatory in the review form"
+        },
+        {
+          "record": "ctx_1771000000000_e0f6a7b8c9da",
+          "finding": "escalation resolved after the four hour SLA",
+          "severity": "low",
+          "remediation": "queue alerting threshold lowered"
+        }
+      ],
+      "conclusion": "No unrecorded automated decisions found in the period.",
+      "auditor_ref": "internal_audit_2026_q1"
+    }
+  },
+  "integrity": {
+    "payload_hash": "sha256:1e3a9606447071ca624fe3e18a5b800f0c7013f3ff00160dbd95340c5811604b",
+    "parent_hash": null,
+    "integrity_hash": "sha256:ce8c1e8b8cf507e9af03d9c432e95fecc149009a9854251580692202c57638b9",
+    "verification_status": "valid"
+  },
+  "created_at": "2026-04-30T23:59:00Z"
+}
