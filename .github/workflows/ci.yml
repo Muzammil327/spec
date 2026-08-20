@@ -1,0 +1,29 @@
+name: Spec CI
+
+# Validates the reference examples on every change, and once a week so that
+# rot is caught even when nobody is committing.
+#
+# The examples in this repository are what implementers copy. A wrong hash
+# here propagates into downstream implementations as a "correct" reference,
+# so the validator recomputes every hash from the payload rather than
+# checking that the hashes merely look well-formed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '23 6 * * 1'   # Mondays, 06:23 UTC
+  workflow_dispatch:
+
+jobs:
+  examples:
+    name: Validate examples against schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save ajv ajv-formats canonicalize
+      - run: node tools/validate-examples.mjs

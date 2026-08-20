@@ -2,9 +2,15 @@
   "name": "context-passport",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx serve . --listen ${PORT:-3000} --no-clipboard"
+    "start": "npx serve . --listen ${PORT:-3000} --no-clipboard",
+    "test": "node tools/validate-examples.mjs"
   },
   "dependencies": {
     "serve": "^14.0.0"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "canonicalize": "^2.0.0"
   }
 }
