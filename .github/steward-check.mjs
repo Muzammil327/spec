@@ -20,9 +20,30 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const repo = process.env.REPO;
-const maintainers = (process.env.MAINTAINERS || '')
-  .split(/[,\s]+/).filter(Boolean).map((s) => s.toLowerCase());
+// Anyone with push access counts as a maintainer. Resolved at run time so no
+// personal handle is committed to this public repository.
+function resolveMaintainers() {
+  try {
+    const out = execFileSync('gh', [
+      'api', '--paginate', `repos/${repo}/collaborators`,
+      '--jq', '.[] | select(.permissions.push == true) | .login',
+    ], { encoding: 'utf8' });
+    return out.split('\n').filter(Boolean).map((s) => s.toLowerCase());
+  } catch {
+    return [];
+  }
+}
+const maintainers = resolveMaintainers();
 const graceDays = Number(process.env.GRACE_DAYS || '7');
+
+// If the collaborator lookup fails, every open item looks unanswered, and the
+// alert would fire every week for issues the maintainer opened themselves. An
+// alert that cries wolf weekly is one you stop reading, so bail out loudly
+// instead of guessing.
+if (maintainers.length === 0) {
+  console.error('Could not resolve any maintainer with push access. Skipping the check rather than reporting every open item as unanswered.');
+  process.exit(0);
+}
 
 const isBot = (login = '') =>
   login.endsWith('[bot]') || /(^|-)(bot|dependabot|renovate)$/i.test(login);

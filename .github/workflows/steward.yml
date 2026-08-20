@@ -32,7 +32,9 @@ permissions:
   pull-requests: read
 
 env:
-  MAINTAINERS: bengunvl
+  # Maintainers are resolved from the repository's collaborator list at run
+  # time rather than hardcoded, so this file carries no personal handle and
+  # stays correct if the maintainer set changes.
   GRACE_DAYS: '7'
 
 jobs:
