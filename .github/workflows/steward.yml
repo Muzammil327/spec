@@ -14,7 +14,15 @@ name: Steward
 #    "3 contributions awaiting reply" on an open standard is worse than
 #    silence.
 #
-# 2. The automation does not switch itself off. GitHub disables scheduled
+# 2. Somebody starts using this and nobody notices. Adoption of a CC0 standard
+#    is invisible by design: nobody signs up and there is no server to count.
+#    So .github/adoption-check.mjs looks for evidence that a human did
+#    something, chiefly a Context Passport record or an SDK import committed to
+#    a public repository, and fails the run when a signal rises. The first real
+#    user is the most important event in this project's life and should not
+#    arrive as a line in a log nobody reads.
+#
+# 3. The automation does not switch itself off. GitHub disables scheduled
 #    workflows after 60 days without repository activity, and a repository
 #    with no active development is exactly the case that triggers it. Once a
 #    month this commits a heartbeat file, which counts as activity and keeps
@@ -65,7 +73,33 @@ jobs:
           echo "Heartbeat committed for $month."
 
       # 1. Unanswered external contributions -----------------------------
+      # 3. Adoption. Runs before the contributor check so that a backlog of
+      #    unanswered issues cannot mask the more important news.
+      - name: Watch for external adoption
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: node .github/adoption-check.mjs
+
+      - name: Record any change in adoption
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/adoption.json; then
+            echo "No change in adoption signals."
+            exit 0
+          fi
+          git config user.name  'context-passport-steward'
+          git config user.email 'actions@github.com'
+          git add .github/adoption.json
+          git commit -m "chore: adoption signals changed"
+          git push
+          echo "Recorded new adoption signals."
+
       - name: Check for contributions awaiting a reply
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
