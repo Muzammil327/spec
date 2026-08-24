@@ -230,7 +230,11 @@ Implementations that omit the signature block produce passports with tamper evid
 #### Compliance events
 `override` `consent` `escalate` `redact` `audit`
 
-Custom event types are permitted. Implementations SHOULD prefix custom types with a namespace: `myorg.custom_type`.
+Custom event types are permitted. Every event type MUST match the pattern
+`^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$`: one or more lowercase segments, each
+starting with a letter, followed by lowercase letters, digits or underscores,
+joined by single dots. Implementations SHOULD additionally prefix custom types
+with a namespace: `myorg.custom_type`.
 
 ### 3.4 Integrity computation
 
