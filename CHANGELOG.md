@@ -40,6 +40,15 @@ breaking, which is exactly what happened in 2.0.
 Nothing in this section changes the wire format. Records written against 2.0
 are unaffected.
 
+### Changed
+
+- `schema/v2.json`: `event.type` now carries the pattern
+  `^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$`, enforcing as validation the shape
+  §3.3 always described: lowercase letters/digits/underscore segments joined
+  by dots (#35). Not breaking under this file's definition — no hashed bytes
+  change and every specified type matches — but records from implementations
+  that ignored the naming guidance may now fail schema validation.
+
 ## [2.0] - 2026-05-19
 
 ### Changed
