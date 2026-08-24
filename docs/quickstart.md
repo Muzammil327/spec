@@ -1,8 +1,8 @@
 # Quickstart
 
 Zero to a verified chain in about five minutes, in Python. Every block below is
-part of one script and runs as written. The TypeScript SDK has the same shape
-if you prefer it.
+part of one script and runs as written. A TypeScript version of this walkthrough
+lives at [`quickstart-typescript.md`](quickstart-typescript.md).
 
 ## Install
 
