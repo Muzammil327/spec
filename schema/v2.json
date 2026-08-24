@@ -49,6 +49,7 @@
       "properties": {
         "type": {
           "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
           "examples": ["commit", "fork", "checkpoint", "revert", "branch", "merge",
                        "spawn", "retry", "timeout", "error",
                        "override", "consent", "escalate", "redact", "audit"]
