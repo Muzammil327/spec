@@ -24,7 +24,7 @@ const DOC = join(ROOT, "docs", "quickstart-typescript.md");
 //   parent_hash linkage, verify, verify after tampering, verify after undo.
 const EXPECTED_BOOLS = ["true", "true", "false", "true"];
 
-const blocks = [...readFileSync(DOC, "utf8").matchAll(/```typescript\n(.*?)```/gs)].map((m) => m[1]);
+const blocks = [...readFileSync(DOC, "utf8").replace(/\r\n/g, "\n").matchAll(/```typescript\n(.*?)```/gs)].map((m) => m[1]);
 if (blocks.length === 0) {
   console.error("No typescript blocks found in docs/quickstart-typescript.md");
   process.exit(1);
