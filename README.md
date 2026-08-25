@@ -43,6 +43,7 @@ The goal: become the standard envelope format for AI agent events — a record a
 ## Contents
 
 - [`docs/quickstart.md`](docs/quickstart.md) — five minutes from install to a verified chain
+- [`docs/quickstart-typescript.md`](docs/quickstart-typescript.md) — the same quickstart for the TypeScript SDK
 - [`SPEC.md`](SPEC.md) — full specification (v2.0)
 - [`schema/v2.json`](schema/v2.json) — machine-readable JSON Schema (v2.0)
 - [`schema/v1.json`](schema/v1.json) — machine-readable JSON Schema (v1.x, retained for compatibility)

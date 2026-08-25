@@ -1,1 +1,4 @@
 node_modules/
+
+# Temp dirs created by tools/check-quickstart-ts.mjs
+.tmp-*/
