@@ -1,0 +1,110 @@
+[
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774358291000_a1b2c3d4e5f6",
+    "parent_id": null,
+    "trace_id": "trace_demo_research_brief",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "agent-researcher-01",
+      "agent_name": "Research Agent",
+      "role": "researcher",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "commit",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T10:00:00Z"
+    },
+    "payload": {
+      "input": "Collect public launch notes for Project Atlas.",
+      "output": {
+        "summary": "Found release notes, pricing FAQ, and support article.",
+        "confidence": 0.91,
+        "sources": [
+          "release-notes.md",
+          "pricing-faq.md"
+        ]
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:89d60bc4150c0f0401e73986b473f50e0fabf12504429190c25b72ae05f3021a",
+      "parent_hash": null,
+      "integrity_hash": "sha256:94c80e78dbfaf8f23623dfc1f1a250c9ce4ef21b8fc5dcb9394a11db42b9cd09",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T10:00:00Z"
+  },
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774358500000_a1b2c3d4e5f6",
+    "parent_id": "ctx_1774358291000_a1b2c3d4e5f6",
+    "trace_id": "trace_demo_research_brief",
+    "branch_key": "alt-pricing",
+    "created_by": {
+      "agent_id": "agent-writer-01",
+      "agent_name": "Writer Agent",
+      "role": "writer",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "commit",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T10:35:00Z"
+    },
+    "payload": {
+      "input": "Draft alternate enterprise pricing wording on alt-pricing branch.",
+      "output": {
+        "draft": "Enterprise plans include priority support with a published SLA.",
+        "branch_key": "alt-pricing"
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:5668c768bace5b0b95e3ff3ffabd4950033929f710fb4d5beea245df1ed1bc39",
+      "parent_hash": "sha256:94c80e78dbfaf8f23623dfc1f1a250c9ce4ef21b8fc5dcb9394a11db42b9cd09",
+      "integrity_hash": "sha256:c1360cfaedda31143bf0be502f3acb02cfa779767772a1d68c605b89c1bd8a59",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T10:35:00Z"
+  },
+  {
+    "$schema": "https://contextpassport.com/schema/v2.json",
+    "schema_version": "2.0",
+    "id": "ctx_1774358510000_0a1b2c3d4e5f",
+    "parent_id": "ctx_1774358500000_a1b2c3d4e5f6",
+    "trace_id": "trace_demo_research_brief",
+    "branch_key": "main",
+    "created_by": {
+      "agent_id": "agent-planner-01",
+      "agent_name": "Planner Agent",
+      "role": "planner",
+      "provider": "example",
+      "model": "demo-agent-v1"
+    },
+    "event": {
+      "type": "merge",
+      "to_agent_id": null,
+      "timestamp": "2026-03-29T10:36:00Z"
+    },
+    "payload": {
+      "input": "Merge alt-pricing wording back onto main after reviewer approval.",
+      "output": {
+        "merged_from": "alt-pricing",
+        "strategy": "take_alt_pricing_wording",
+        "conflicts": 0,
+        "result": "Enterprise SLA wording updated on main."
+      }
+    },
+    "integrity": {
+      "payload_hash": "sha256:445713597279c490a18da0362b0a1ae4907ea9f891f8fc73e43c61fd8574500c",
+      "parent_hash": "sha256:c1360cfaedda31143bf0be502f3acb02cfa779767772a1d68c605b89c1bd8a59",
+      "integrity_hash": "sha256:258bc5bd7ad87a5181e7db764075a57eade7bbb7b835a1dc3edda53ec2cfdef4",
+      "verification_status": "valid"
+    },
+    "created_at": "2026-03-29T10:36:00Z"
+  }
+]
