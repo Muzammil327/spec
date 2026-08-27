@@ -1,0 +1,36 @@
+{
+  "$schema": "https://contextpassport.com/schema/v2.json",
+  "schema_version": "2.0",
+  "id": "ctx_1774358470000_b1a2c3d4e5f8",
+  "parent_id": null,
+  "trace_id": "trace_demo_research_brief",
+  "branch_key": "alt-pricing",
+  "created_by": {
+    "agent_id": "agent-planner-01",
+    "agent_name": "Planner Agent",
+    "role": "planner",
+    "provider": "example",
+    "model": "demo-agent-v1"
+  },
+  "event": {
+    "type": "branch",
+    "to_agent_id": null,
+    "timestamp": "2026-03-29T10:32:00Z"
+  },
+  "payload": {
+    "input": "Fork alternate pricing copy after reviewer checkpoint.",
+    "output": {
+      "action": "created",
+      "from_branch": "main",
+      "branch_key": "alt-pricing",
+      "reason": "Explore alternate enterprise pricing wording."
+    }
+  },
+  "integrity": {
+    "payload_hash": "sha256:17a4e721b08159c0e7e901ac24929731ee651406c105132fd0ddf0498adbc63c",
+    "parent_hash": null,
+    "integrity_hash": "sha256:d1b22b0c4222148bcfabd8aff5a73ec3a2b77b154943d087a18bb37c01093bf4",
+    "verification_status": "valid"
+  },
+  "created_at": "2026-03-29T10:32:00Z"
+}
