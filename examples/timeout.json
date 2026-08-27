@@ -1,0 +1,41 @@
+{
+  "$schema": "https://contextpassport.com/schema/v2.json",
+  "schema_version": "2.0",
+  "id": "ctx_1774358340000_f1e2d3c4b5a6",
+  "parent_id": null,
+  "trace_id": "trace_demo_research_brief",
+  "branch_key": "main",
+  "created_by": {
+    "agent_id": "agent-researcher-01",
+    "agent_name": "Research Agent",
+    "role": "researcher",
+    "provider": "example",
+    "model": "demo-agent-v1"
+  },
+  "event": {
+    "type": "timeout",
+    "to_agent_id": null,
+    "timestamp": "2026-03-29T10:07:00Z"
+  },
+  "payload": {
+    "input": {
+      "tool": "web_search",
+      "arguments": {
+        "query": "Project Atlas enterprise SLA"
+      }
+    },
+    "output": null,
+    "memory": {
+      "operation": "tool_call:web_search",
+      "timeout_ms": 30000,
+      "elapsed_ms": 30001
+    }
+  },
+  "integrity": {
+    "payload_hash": "sha256:27638e9a50676792faec8ac240374e5ce1789d25a2846a10fc87e3622abb3689",
+    "parent_hash": null,
+    "integrity_hash": "sha256:79f87b18d7f2f5537d9554e9099b9521a0ee77ad83cf9a914877cb68b44483a1",
+    "verification_status": "valid"
+  },
+  "created_at": "2026-03-29T10:07:00Z"
+}
