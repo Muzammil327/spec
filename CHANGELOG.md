@@ -48,6 +48,12 @@ are unaffected.
   by dots (#35). Not breaking under this file's definition — no hashed bytes
   change and every specified type matches — but records from implementations
   that ignored the naming guidance may now fail schema validation.
+- §2.6 now says custom event types SHOULD be prefixed with a namespace, matching
+  §3.3's keyword and mechanism language, instead of requiring that new event
+  types MUST be namespaced. The fifteen specified types remain conforming
+  without a namespace; custom fields and vendor extensions stay MUST (#38). Not
+  breaking under this file's definition — no hashed bytes change and no
+  previously conforming record becomes non-conforming.
 
 ## [2.0] - 2026-05-19
 

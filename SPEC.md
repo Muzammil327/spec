@@ -82,7 +82,7 @@ This specification is released under CC0 1.0 — no copyright, no restrictions. 
 
 ### 2.6 Forward-compatible by extension
 
-The specification grows by addition, never by breaking change within a major version. New event types, custom fields, and vendor-specific extensions MUST be namespaced (e.g. `myorg.custom_type`, `myorg.field_name`). Implementations MUST ignore unknown namespaced fields without error. A formal extension registry lives at `EXTENSIONS.md` in the repository. Anyone may submit an extension via pull request; widely-adopted extensions are candidates for promotion to the core spec in subsequent major versions.
+The specification grows by addition, never by breaking change within a major version. Custom event types SHOULD be prefixed with a namespace (e.g. `myorg.custom_type`). Custom fields and vendor-specific extensions MUST be namespaced (e.g. `myorg.field_name`). Implementations MUST ignore unknown namespaced fields without error. A formal extension registry lives at `EXTENSIONS.md` in the repository. Anyone may submit an extension via pull request; widely-adopted extensions are candidates for promotion to the core spec in subsequent major versions.
 
 ---
 
