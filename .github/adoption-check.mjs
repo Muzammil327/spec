@@ -45,7 +45,16 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const STATE = '.github/adoption.json';
-const repo = process.env.REPO || 'contextpassport/spec';
+const DEFAULT_REPOS = [
+  'contextpassport/spec',
+  'contextpassport/python',
+  'contextpassport/typescript',
+  'contextpassport/conformance-tests',
+  'contextpassport/verifiable-agent-template',
+];
+const repos = (process.env.REPOS || process.env.REPO || DEFAULT_REPOS.join(' '))
+  .split(/\s+/)
+  .filter(Boolean);
 
 // Queries chosen to be specific enough that a hit is real. Broad ones like
 // `"schema_version": "2.0"` return thousands of unrelated files and are
@@ -86,12 +95,19 @@ function codeSearchRepos(query) {
 }
 
 function repoStats() {
-  try {
-    const out = gh(['api', `repos/${repo}`, '--jq', '{forks: .forks_count, stars: .stargazers_count}']);
-    return JSON.parse(out);
-  } catch {
-    return {};
+  let forks = 0;
+  let stars = 0;
+  for (const repo of repos) {
+    try {
+      const out = gh(['api', `repos/${repo}`, '--jq', '{forks: .forks_count, stars: .stargazers_count}']);
+      const stats = JSON.parse(out);
+      forks += stats.forks || 0;
+      stars += stats.stars || 0;
+    } catch {
+      // A single failed lookup must not erase the aggregate.
+    }
   }
+  return { forks, stars };
 }
 
 // ---------------------------------------------------------------- gather

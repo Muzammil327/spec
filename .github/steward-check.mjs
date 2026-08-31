@@ -2,88 +2,137 @@
 /**
  * Fails when an outside contribution has been left without a maintainer reply.
  *
- * Reads issues.json / prs.json (written by the steward workflow), then asks
- * the API for each item's comments. An item counts as "awaiting reply" when:
+ * Scans open issues and pull requests across the Context Passport repositories
+ * (REPOS), then asks the API for each item's comments and — for pull requests
+ * — reviews. An item counts as "awaiting reply" when:
  *
  *   - it was opened by someone who is not a maintainer and not a bot, and
- *   - no maintainer has commented on it, and
+ *   - no maintainer for that repository has commented or submitted a review, and
  *   - it is older than GRACE_DAYS.
  *
- * The grace period matters. Failing the moment something is opened would turn
- * the alert into noise, and an alert that fires constantly is one you stop
- * reading -- the same reason the weekly growth email was switched off.
+ * Maintainers are resolved per repository (push access on that repo only), so
+ * a collaborator in one repository is never treated as a maintainer elsewhere.
+ *
+ * Cross-repo reads require STEWARD_TOKEN (a PAT or GitHub App installation
+ * token with issues and pull-requests read on the listed repositories).
  *
  * Exit 1 makes GitHub email the repository owner. Nothing is posted publicly.
  */
 
-import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const repo = process.env.REPO;
-// Anyone with push access counts as a maintainer. Resolved at run time so no
-// personal handle is committed to this public repository.
-function resolveMaintainers() {
-  try {
-    const out = execFileSync('gh', [
-      'api', '--paginate', `repos/${repo}/collaborators`,
-      '--jq', '.[] | select(.permissions.push == true) | .login',
-    ], { encoding: 'utf8' });
-    return out.split('\n').filter(Boolean).map((s) => s.toLowerCase());
-  } catch {
-    return [];
-  }
-}
-const maintainers = resolveMaintainers();
+const DEFAULT_REPOS = [
+  'contextpassport/spec',
+  'contextpassport/python',
+  'contextpassport/typescript',
+  'contextpassport/conformance-tests',
+  'contextpassport/verifiable-agent-template',
+];
+
+const repos = (process.env.REPOS || process.env.REPO || DEFAULT_REPOS.join(' '))
+  .split(/\s+/)
+  .filter(Boolean);
 const graceDays = Number(process.env.GRACE_DAYS || '7');
 
-// If the collaborator lookup fails, every open item looks unanswered, and the
-// alert would fire every week for issues the maintainer opened themselves. An
-// alert that cries wolf weekly is one you stop reading, so bail out loudly
-// instead of guessing.
-if (maintainers.length === 0) {
-  console.error('Could not resolve any maintainer with push access. Skipping the check rather than reporting every open item as unanswered.');
-  process.exit(0);
+if (!process.env.GH_TOKEN) {
+  console.error(
+    'STEWARD_TOKEN secret is not configured. Cross-repo contribution checks need a PAT or GitHub App token with read access to issues and pull requests on the Context Passport repositories.',
+  );
+  process.exit(1);
+}
+
+const maintainerCache = new Map();
+
+function gh(args) {
+  return execFileSync('gh', args, { encoding: 'utf8' });
+}
+
+function resolveMaintainers(repo) {
+  if (maintainerCache.has(repo)) return maintainerCache.get(repo);
+  const out = gh([
+    'api', '--paginate', `repos/${repo}/collaborators`,
+    '--jq', '.[] | select(.permissions.push == true) | .login',
+  ]);
+  const list = out.split('\n').filter(Boolean).map((s) => s.toLowerCase());
+  if (list.length === 0) {
+    throw new Error(`no maintainer with push access found for ${repo}`);
+  }
+  maintainerCache.set(repo, list);
+  return list;
 }
 
 const isBot = (login = '') =>
   login.endsWith('[bot]') || /(^|-)(bot|dependabot|renovate)$/i.test(login);
-const isMaintainer = (login = '') => maintainers.includes(login.toLowerCase());
 
-const read = (f) => { try { return JSON.parse(readFileSync(f, 'utf8')); } catch { return []; } };
+function listOpen(repo, kind) {
+  const subcommand = kind === 'issue' ? 'issue' : 'pr';
+  const out = gh([
+    subcommand, 'list', '--repo', repo, '--state', 'open', '--limit', '100',
+    '--json', 'number,title,author,createdAt,url',
+  ]);
+  const label = kind === 'issue' ? 'issue' : 'pull request';
+  return JSON.parse(out).map((item) => ({ ...item, repo, kind: label }));
+}
 
-function commenters(kind, number) {
-  // gh api paginates; --paginate returns a concatenated array via jq -s.
+function responders(repo, number, isPullRequest) {
+  const logins = new Set();
   try {
-    const out = execFileSync('gh', [
+    const comments = gh([
       'api', '--paginate', `repos/${repo}/issues/${number}/comments`,
       '--jq', '.[].user.login',
-    ], { encoding: 'utf8' });
-    return out.split('\n').filter(Boolean);
+    ]);
+    comments.split('\n').filter(Boolean).forEach((login) => logins.add(login));
   } catch {
-    return [];
+    // Treat a failed comment fetch as no reply rather than skipping the item.
   }
+  if (isPullRequest) {
+    try {
+      const reviews = gh([
+        'api', '--paginate', `repos/${repo}/pulls/${number}/reviews`,
+        '--jq', '.[].user.login',
+      ]);
+      reviews.split('\n').filter(Boolean).forEach((login) => logins.add(login));
+    } catch {
+      // Same as above.
+    }
+  }
+  return [...logins];
 }
 
 const ageDays = (iso) => (Date.now() - new Date(iso).getTime()) / 86400000;
 
-const waiting = [];
-const items = [
-  ...read('issues.json').map((i) => ({ ...i, kind: 'issue' })),
-  ...read('prs.json').map((i) => ({ ...i, kind: 'pull request' })),
-];
+const items = [];
+for (const repo of repos) {
+  try {
+    resolveMaintainers(repo);
+    items.push(...listOpen(repo, 'issue'));
+    items.push(...listOpen(repo, 'pull request'));
+  } catch (err) {
+    console.error(`Could not scan ${repo}: ${err.message || err}`);
+    process.exit(1);
+  }
+}
 
+const waiting = [];
 for (const it of items) {
   const author = it.author?.login || '';
+  const maintainers = maintainerCache.get(it.repo);
+  const isMaintainer = (login = '') => maintainers.includes(login.toLowerCase());
+
   if (isMaintainer(author) || isBot(author)) continue;
 
   const age = ageDays(it.createdAt);
   if (age < graceDays) continue;
 
-  const replied = commenters(it.kind, it.number).some(isMaintainer);
+  const isPullRequest = it.kind === 'pull request';
+  const replied = responders(it.repo, it.number, isPullRequest).some(isMaintainer);
   if (!replied) waiting.push({ ...it, author, age: Math.floor(age) });
 }
 
-console.log(`Scanned ${items.length} open item(s); maintainers: ${maintainers.join(', ') || '(none set)'}`);
+const maintainerSummary = repos
+  .map((repo) => `${repo}: ${maintainerCache.get(repo).join(', ')}`)
+  .join('; ');
+console.log(`Scanned ${items.length} open item(s) across ${repos.length} repo(s); maintainers: ${maintainerSummary}`);
 
 if (waiting.length === 0) {
   console.log('Nothing is waiting on a reply.');
@@ -92,7 +141,7 @@ if (waiting.length === 0) {
 
 console.error(`\n${waiting.length} contribution(s) awaiting a maintainer reply:\n`);
 for (const w of waiting.sort((a, b) => b.age - a.age)) {
-  console.error(`  ${w.age}d  ${w.kind} #${w.number} by ${w.author}`);
+  console.error(`  ${w.age}d  ${w.kind} ${w.repo}#${w.number} by ${w.author}`);
   console.error(`       ${w.title}`);
   console.error(`       ${w.url}\n`);
 }
