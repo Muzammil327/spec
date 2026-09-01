@@ -26,10 +26,11 @@ breaking, which is exactly what happened in 2.0.
 ### Changed
 
 - SPEC.md: `pattern` constraints in JSON Schema files are now explicitly
-  normative ECMA-262 regex with full-string matching required. Closes the
-  dialect gap where `"commit\n"` accepted in Python `re.match` but rejected
-  by ECMA-262 — a record could otherwise pass one conforming verifier and fail
-  another on the same bytes. No schema or hashed-byte change.
+  documented as ECMA-262 regex per JSON Schema semantics, including the `$`
+  end-of-string rule that rejects `"commit\n"` in ECMA-262 but accepts it in
+  Python `re.match` / `re.search` — a record could otherwise pass one
+  conforming verifier and fail another on the same bytes. No schema or
+  hashed-byte change.
 
 ## [2.0.1] - 2026-08-28
 

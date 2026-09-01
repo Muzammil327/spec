@@ -521,13 +521,11 @@ The machine-readable JSON Schemas are in this repository:
 - `schema/v1.json` — retained for verifying v1.x records via the compatibility shim
 
 Every `pattern` constraint in these schemas uses ECMA-262 regular expression
-syntax, per the JSON Schema specification. Implementations MUST evaluate each
-pattern as a full-string match equivalent to ECMA-262
-`RegExp.prototype.test` on the entire string value. In regex dialects where
-`^` and `$` behave differently — notably Python's `re` module, where `$`
-matches immediately before a trailing newline — implementations MUST NOT use
-partial matchers such as `re.match` or `re.search`; use `re.fullmatch` or
-equivalent instead.
+syntax and semantics, per the JSON Schema specification. In particular `$`
+matches only at the end of the string, never before a trailing newline.
+Python's `re` module differs here, so implementations MUST NOT evaluate these
+patterns with `re.match` or `re.search`; `re.fullmatch` gives the correct
+result for the anchored patterns in these schemas.
 
 ---
 
