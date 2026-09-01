@@ -24,12 +24,10 @@ name: Steward
 #
 #    SDK pull requests land in the other Context Passport repositories, not
 #    here. The contribution check therefore scans every repository listed in
-#    REPOS below. Cross-repo reads use the STEWARD_TOKEN repository secret: a
-#    fine-grained PAT or GitHub App installation token with issues, pull-
-#    requests, and administration read on those repositories (maintainer
-#    lookup calls /collaborators, which needs administration read). Until that
-#    secret exists, the check fails the run so the gap is not mistaken for an
-#    all-clear.
+#    REPOS below. Those repositories are public; issue, pull request, comment,
+#    and review reads need no repository secret. Maintainers are taken from
+#    .github/CODEOWNERS in the checkout, which GOVERNANCE.md names as the
+#    authoritative list.
 #
 # 3. The automation does not switch itself off. GitHub disables scheduled
 #    workflows after 60 days without repository activity, and any quiet stretch
@@ -80,9 +78,11 @@ jobs:
       # 2. Contributions left without a reply.
       - name: Check for contributions awaiting a reply
         if: always()
-        env:
-          GH_TOKEN: ${{ secrets.STEWARD_TOKEN }}
-        run: node .github/steward-check.mjs
+        run: |
+          # Public repos: unauthenticated reads work cross-repo. The Actions
+          # GITHUB_TOKEN is scoped to this repository only and would 404 elsewhere.
+          unset GITHUB_TOKEN GH_TOKEN
+          node .github/steward-check.mjs
 
       # 3. Keep the schedule from being auto-disabled. Runs last and always,
       #    so a genuine alert above cannot stop the automation staying alive.
