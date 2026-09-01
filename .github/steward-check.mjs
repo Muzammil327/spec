@@ -11,8 +11,8 @@
  *   - it is older than GRACE_DAYS.
  *
  * Maintainers are read from .github/CODEOWNERS in the checkout, which
- * GOVERNANCE.md names as the authoritative list. No repository secret is
- * required: issue, pull request, comment, and review data are public reads.
+ * GOVERNANCE.md names as the authoritative list. The workflow passes
+ * GH_TOKEN from the Actions token; no separate PAT is required.
  *
  * Exit 1 makes GitHub email the repository owner. Nothing is posted publicly.
  */

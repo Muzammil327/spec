@@ -24,8 +24,8 @@ name: Steward
 #
 #    SDK pull requests land in the other Context Passport repositories, not
 #    here. The contribution check therefore scans every repository listed in
-#    REPOS below. Those repositories are public; issue, pull request, comment,
-#    and review reads need no repository secret. Maintainers are taken from
+#    REPOS below. Those repositories are public; the Actions token is enough
+#    for issue, pull request, comment, and review reads. Maintainers are taken from
 #    .github/CODEOWNERS in the checkout, which GOVERNANCE.md names as the
 #    authoritative list.
 #
@@ -78,11 +78,9 @@ jobs:
       # 2. Contributions left without a reply.
       - name: Check for contributions awaiting a reply
         if: always()
-        run: |
-          # Public repos: unauthenticated reads work cross-repo. The Actions
-          # GITHUB_TOKEN is scoped to this repository only and would 404 elsewhere.
-          unset GITHUB_TOKEN GH_TOKEN
-          node .github/steward-check.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/steward-check.mjs
 
       # 3. Keep the schedule from being auto-disabled. Runs last and always,
       #    so a genuine alert above cannot stop the automation staying alive.
