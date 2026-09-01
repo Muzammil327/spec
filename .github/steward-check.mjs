@@ -14,7 +14,8 @@
  * a collaborator in one repository is never treated as a maintainer elsewhere.
  *
  * Cross-repo reads require STEWARD_TOKEN (a PAT or GitHub App installation
- * token with issues and pull-requests read on the listed repositories).
+ * token with issues, pull-requests, and administration read on the listed
+ * repositories — collaborator listing needs administration read).
  *
  * Exit 1 makes GitHub email the repository owner. Nothing is posted publicly.
  */
@@ -36,7 +37,7 @@ const graceDays = Number(process.env.GRACE_DAYS || '7');
 
 if (!process.env.GH_TOKEN) {
   console.error(
-    'STEWARD_TOKEN secret is not configured. Cross-repo contribution checks need a PAT or GitHub App token with read access to issues and pull requests on the Context Passport repositories.',
+    'STEWARD_TOKEN secret is not configured. Cross-repo contribution checks need a PAT or GitHub App token with issues, pull requests, and administration read on the Context Passport repositories.',
   );
   process.exit(1);
 }

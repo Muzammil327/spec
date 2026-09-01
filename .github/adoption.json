@@ -4,8 +4,16 @@
     "python": 0,
     "typescript": 0,
     "mcp": 0,
-    "forks": 5,
-    "stars": 2,
-    "tinker": 0
+    "tinker": 0,
+    "forks_spec": 5,
+    "stars_spec": 2,
+    "forks_python": 2,
+    "stars_python": 0,
+    "forks_typescript": 2,
+    "stars_typescript": 0,
+    "forks_conformance-tests": 0,
+    "stars_conformance-tests": 0,
+    "forks_verifiable-agent-template": 0,
+    "stars_verifiable-agent-template": 0
   }
 }

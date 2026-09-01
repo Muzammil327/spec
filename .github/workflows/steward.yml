@@ -25,9 +25,11 @@ name: Steward
 #    SDK pull requests land in the other Context Passport repositories, not
 #    here. The contribution check therefore scans every repository listed in
 #    REPOS below. Cross-repo reads use the STEWARD_TOKEN repository secret: a
-#    fine-grained PAT or GitHub App installation token with issues and pull-
-#    requests read on those repositories. Until that secret exists, the check
-#    fails the run so the gap is not mistaken for an all-clear.
+#    fine-grained PAT or GitHub App installation token with issues, pull-
+#    requests, and administration read on those repositories (maintainer
+#    lookup calls /collaborators, which needs administration read). Until that
+#    secret exists, the check fails the run so the gap is not mistaken for an
+#    all-clear.
 #
 # 3. The automation does not switch itself off. GitHub disables scheduled
 #    workflows after 60 days without repository activity, and any quiet stretch

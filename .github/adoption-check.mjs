@@ -26,7 +26,8 @@
  *                whereas "tinker.finetune_started" appears only where somebody
  *                actually recorded one. This is the argument for namespacing
  *                custom event types generally, not just here.
- *   forks/stars  weaker, but a fork is a deliberate act.
+ *   forks_*/stars_* per repository. Weaker than a code hit, but a fork is a
+ *                deliberate act and the repo prefix tells the owner which one moved.
  *
  * State lives in .github/adoption.json, which deliberately carries no
  * timestamp: it should change only when a signal changes, so its git history
@@ -95,19 +96,19 @@ function codeSearchRepos(query) {
 }
 
 function repoStats() {
-  let forks = 0;
-  let stars = 0;
+  const stats = {};
   for (const repo of repos) {
+    const short = repo.split('/')[1];
     try {
       const out = gh(['api', `repos/${repo}`, '--jq', '{forks: .forks_count, stars: .stargazers_count}']);
-      const stats = JSON.parse(out);
-      forks += stats.forks || 0;
-      stars += stats.stars || 0;
+      const { forks, stars } = JSON.parse(out);
+      stats[`forks_${short}`] = forks;
+      stats[`stars_${short}`] = stars;
     } catch {
-      // A single failed lookup must not erase the aggregate.
+      // A single failed lookup must not erase the baseline for other repos.
     }
   }
-  return { forks, stars };
+  return stats;
 }
 
 // ---------------------------------------------------------------- gather
