@@ -26,7 +26,9 @@
  *                whereas "tinker.finetune_started" appears only where somebody
  *                actually recorded one. This is the argument for namespacing
  *                custom event types generally, not just here.
- *   forks/stars  weaker, but a fork is a deliberate act.
+ *   forks_<repo>, stars_<repo>
+ *                per repository. Weaker than a code hit, but a fork is a
+ *                deliberate act and the repo prefix tells the owner which one moved.
  *
  * State lives in .github/adoption.json, which deliberately carries no
  * timestamp: it should change only when a signal changes, so its git history
@@ -45,7 +47,16 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const STATE = '.github/adoption.json';
-const repo = process.env.REPO || 'contextpassport/spec';
+const DEFAULT_REPOS = [
+  'contextpassport/spec',
+  'contextpassport/python',
+  'contextpassport/typescript',
+  'contextpassport/conformance-tests',
+  'contextpassport/verifiable-agent-template',
+];
+const repos = (process.env.REPOS || process.env.REPO || DEFAULT_REPOS.join(' '))
+  .split(/\s+/)
+  .filter(Boolean);
 
 // Queries chosen to be specific enough that a hit is real. Broad ones like
 // `"schema_version": "2.0"` return thousands of unrelated files and are
@@ -86,12 +97,19 @@ function codeSearchRepos(query) {
 }
 
 function repoStats() {
-  try {
-    const out = gh(['api', `repos/${repo}`, '--jq', '{forks: .forks_count, stars: .stargazers_count}']);
-    return JSON.parse(out);
-  } catch {
-    return {};
+  const stats = {};
+  for (const repo of repos) {
+    const short = repo.split('/')[1];
+    try {
+      const out = gh(['api', `repos/${repo}`, '--jq', '{forks: .forks_count, stars: .stargazers_count}']);
+      const { forks, stars } = JSON.parse(out);
+      stats[`forks_${short}`] = forks;
+      stats[`stars_${short}`] = stars;
+    } catch {
+      // A single failed lookup must not erase the baseline for other repos.
+    }
   }
+  return stats;
 }
 
 // ---------------------------------------------------------------- gather
