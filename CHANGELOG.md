@@ -23,6 +23,15 @@ breaking, which is exactly what happened in 2.0.
 
 ## [Unreleased]
 
+### Changed
+
+- SPEC.md: `pattern` constraints in JSON Schema files are now explicitly
+  documented as ECMA-262 regex per JSON Schema semantics, including the `$`
+  end-of-string rule that rejects `"commit\n"` in ECMA-262 but accepts it in
+  Python `re.match` / `re.search` — a record could otherwise pass one
+  conforming verifier and fail another on the same bytes. No schema or
+  hashed-byte change.
+
 ### Fixed
 
 - `package-lock.json` was out of sync with `package.json`, so `npm ci` failed
