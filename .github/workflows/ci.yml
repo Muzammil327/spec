@@ -25,13 +25,51 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '20'
-      - run: npm install --no-save ajv ajv-formats canonicalize
+          cache: npm
+      # npm ci, not npm install --no-save with a package list. Naming packages
+      # here meant the lockfile was never read, so it drifted out of sync with
+      # package.json and nothing went red until someone tried npm ci by hand
+      # (#79). It also kept the dependency list in two places. This installs
+      # what package.json declares, and fails if the lockfile disagrees.
+      - run: npm ci
       - run: node tools/validate-examples.mjs
       # server.js serves contextpassport.com. It previously joined the raw
       # request path onto the site root with no containment check, which made
       # every file the web process could read fetchable over HTTP. Checked here
       # so it cannot come back quietly.
       - run: node tools/check-server.mjs
+
+  scripts:
+    name: Automation scripts parse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      # Nothing in CI ever loaded .github/*.mjs, so a change that stopped one
+      # of them parsing went green three times in a row on #69. The Steward
+      # scripts only run on a schedule, where the first sign of trouble is a
+      # failure email a week later that reads like the adoption alert it was
+      # meant to send.
+      #
+      # This only proves the files parse. It does not prove they work, and it
+      # is not a substitute for running them. It is here because the specific
+      # way #69 broke, a `*/` inside a block comment closing it early, is
+      # invisible on review and free to catch.
+      # Check every file and report all failures, rather than stopping at the
+      # first one, so a run names everything that needs fixing.
+      - run: |
+          failed=0
+          for f in .github/*.mjs tools/*.mjs; do
+            if node --check "$f"; then
+              echo "ok    $f"
+            else
+              echo "FAIL  $f"
+              failed=1
+            fi
+          done
+          exit $failed
 
   docs-and-examples:
     name: Documented code still runs
@@ -55,5 +93,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '20'
-      - run: npm install --no-save @contextpassport/core@^2.0.0 tsx
+          cache: npm
+      # See the note in the examples job: npm ci so the lockfile is exercised
+      # rather than bypassed. @contextpassport/core and tsx are both in
+      # devDependencies, so this installs them without naming them again.
+      - run: npm ci
       - run: node tools/check-quickstart-ts.mjs
